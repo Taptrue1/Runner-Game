@@ -13,11 +13,10 @@ public class Player : MonoBehaviour
     {
         _rigidbody = GetComponent<Rigidbody>();
         _runStartTime = Time.time;
-
-        Debug.Log(_runStartTime);
     }
     private void FixedUpdate()
     {
-        _rigidbody.velocity = new Vector3(0, 0, _speed);
+        var speed = _speed + _speedIncrease * (Time.time - _runStartTime);
+        _rigidbody.velocity = new Vector3(0, 0, speed);
     }
 }
