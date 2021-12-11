@@ -3,16 +3,22 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class Player : MonoBehaviour
 {
+    [Header("Speed Options")]
     [SerializeField] private float _speed;
     [SerializeField] private float _speedIncrease;
+    [Header("Jump Options")]
     [SerializeField] private float _jumpForce;
     [SerializeField] private float _gravity;
+    [Header("Road Options")]
+    [SerializeField] private int _linesCount;
+    [SerializeField] private float _lineSize;
 
     private CharacterController _controller;
     private Vector3 _moveDirection;
-    private float _startRunTime;
     private Vector2 _startTouchPosition;
     private Vector2 _endTouchPosition;
+    private float _startRunTime;
+    private int _currentLine;
 
     private void Start()
     {
@@ -28,6 +34,8 @@ public class Player : MonoBehaviour
         {
             _moveDirection.y = _jumpForce;
         }
+
+        ChangeLine(input);
     }
     private void FixedUpdate()
     {
@@ -57,5 +65,18 @@ public class Player : MonoBehaviour
         }
 
         return swipe;
+    }
+    private void ChangeLine(Vector2 input)
+    {
+        if (input == Vector2.right)
+            _currentLine++;
+        else if (input == Vector2.left)
+            _currentLine--;
+
+        if (_currentLine < 0) _currentLine = 0;
+        else if (_currentLine > _linesCount) _currentLine = _linesCount;
+
+        var resultX = _currentLine * _lineSize;
+        transform.position = new Vector3(resultX, transform.position.y);
     }
 }
