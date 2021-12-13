@@ -14,6 +14,7 @@ public class LevelGenerator : MonoBehaviour
 
     private List<GameObject> _partsPool;
     private int _nextPartIndex;
+    private const int _offset = 2;
 
     private void Start()
     {
@@ -32,7 +33,8 @@ public class LevelGenerator : MonoBehaviour
     private void CheckPartPass()
     {
         var part = _partsPool[0];
-        var isPartPassed = part.transform.position.z + _partsLength / 2 < _player.position.z;
+        var distanceToCover = part.transform.position.z + _offset + _partsLength / 2;
+        var isPartPassed = distanceToCover < _player.position.z;
 
         if (isPartPassed)
         {
