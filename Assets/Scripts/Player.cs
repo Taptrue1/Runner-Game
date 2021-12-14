@@ -46,6 +46,11 @@ public class Player : MonoBehaviour
         _rigidbody.velocity = moveDirection;
         transform.position = Vector3.MoveTowards(transform.position, targetPosition, _sideSpeed * Time.fixedDeltaTime);
     }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.TryGetComponent(out Enemy enemy))
+            gameObject.SetActive(false);
+    }
 
     private Vector2 GetSwipe()
     {
