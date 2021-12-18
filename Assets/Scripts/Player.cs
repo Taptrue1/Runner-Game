@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(CharacterController))]
 public class Player : MonoBehaviour
 {
     [Header("Speed Options")]
@@ -9,46 +9,47 @@ public class Player : MonoBehaviour
     [SerializeField] private float _sideSpeed;
     [Header("Jump Options")]
     [SerializeField] private float _jumpForce;
+    [SerializeField] private float _gravity;
     [Header("Road Options")]
     [SerializeField] private int _currentLine;
     [SerializeField] private int _linesCount;
     [SerializeField] private float _lineSize;
 
-    private Rigidbody _rigidbody;
+    private CharacterController _controller;
+    private Vector3 _moveDirection;
     private Vector2 _startTouchPosition;
     private Vector2 _endTouchPosition;
     private float _startRunTime;
-    private const float _groundCheckDistance = 1;
+    private const float _rayDistance = 1;
 
     private void Start()
     {
-        _rigidbody = GetComponent<Rigidbody>();
+        _controller = GetComponent<CharacterController>();
         _startRunTime = Time.time;
     }
     private void Update()
     {
         var input = GetSwipe();
-        var canJump = input == Vector2.up && isGrounded();
+        var canJump = input == Vector2.up && _controller.isGrounded;
 
         if (canJump)
-        {
-            _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
-        }
+            _moveDirection.y = _jumpForce;
 
         ChangeLine(input);
     }
     private void FixedUpdate()
     {
         var speed = _speed + _speedIncrease * (Time.time - _startRunTime);
-        var moveDirection = new Vector3(_rigidbody.velocity.x, _rigidbody.velocity.y, speed);
-        var targetPosition = new Vector3(_currentLine * _lineSize, transform.position.y, transform.position.z);
+        var resultX = Mathf.MoveTowards(transform.position.x, _currentLine * _lineSize, _sideSpeed * Time.fixedDeltaTime);
 
-        _rigidbody.velocity = moveDirection;
-        transform.position = Vector3.MoveTowards(transform.position, targetPosition, _sideSpeed * Time.fixedDeltaTime);
+        _moveDirection.y -= _gravity * Time.fixedDeltaTime;
+        _controller.Move(_moveDirection * Time.fixedDeltaTime);
+        transform.position = new Vector3(resultX, transform.position.y, transform.position.z);
+        transform.Translate(new Vector3(0, 0, speed) * Time.fixedDeltaTime);
     }
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if (collision.collider.TryGetComponent(out Enemy enemy))
+        if (other.TryGetComponent(out Enemy enemy))
             gameObject.SetActive(false);
     }
 
@@ -82,14 +83,5 @@ public class Player : MonoBehaviour
 
         if (_currentLine < 0) _currentLine = 0;
         else if (_currentLine > _linesCount) _currentLine = _linesCount;
-    }
-    private bool isGrounded()
-    {
-        Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, _groundCheckDistance);
-        Debug.DrawRay(transform.position, Vector3.down * _groundCheckDistance);
-        if (hit.collider != null)
-            return true;
-
-        return false;
     }
 }
