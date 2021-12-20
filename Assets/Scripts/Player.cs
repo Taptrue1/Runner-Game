@@ -1,39 +1,44 @@
 using UnityEngine;
 
-[RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(Rigidbody))]
 public class Player : MonoBehaviour
 {
+    [SerializeField] Animator _animator;
     [Header("Speed Options")]
     [SerializeField] private float _speed;
     [SerializeField] private float _speedIncrease;
     [SerializeField] private float _sideSpeed;
     [Header("Jump Options")]
     [SerializeField] private float _jumpForce;
-    [SerializeField] private float _gravity;
     [Header("Road Options")]
     [SerializeField] private int _currentLine;
     [SerializeField] private int _linesCount;
     [SerializeField] private float _lineSize;
 
-    private CharacterController _controller;
-    private Vector3 _moveDirection;
+    private Rigidbody _rigidbody;
     private Vector2 _startTouchPosition;
     private Vector2 _endTouchPosition;
     private float _startRunTime;
-    private const float _rayDistance = 1;
+    private bool _isGrounded;
 
     private void Start()
     {
-        _controller = GetComponent<CharacterController>();
+        _rigidbody = GetComponent<Rigidbody>();
         _startRunTime = Time.time;
+        _animator.SetFloat("MoveSpeed", 1);
     }
     private void Update()
     {
         var input = GetSwipe();
-        var canJump = input == Vector2.up && _controller.isGrounded;
+        var canJump = input == Vector2.up && _isGrounded;
 
         if (canJump)
-            _moveDirection.y = _jumpForce;
+            _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
+
+        if (_isGrounded)
+            _animator.SetBool("Grounded", true);
+        else
+            _animator.SetBool("Grounded", false);
 
         ChangeLine(input);
     }
@@ -42,8 +47,6 @@ public class Player : MonoBehaviour
         var speed = _speed + _speedIncrease * (Time.time - _startRunTime);
         var resultX = Mathf.MoveTowards(transform.position.x, _currentLine * _lineSize, _sideSpeed * Time.fixedDeltaTime);
 
-        _moveDirection.y -= _gravity * Time.fixedDeltaTime;
-        _controller.Move(_moveDirection * Time.fixedDeltaTime);
         transform.position = new Vector3(resultX, transform.position.y, transform.position.z);
         transform.Translate(new Vector3(0, 0, speed) * Time.fixedDeltaTime);
     }
@@ -51,6 +54,14 @@ public class Player : MonoBehaviour
     {
         if (other.TryGetComponent(out Enemy enemy))
             gameObject.SetActive(false);
+    }
+    private void OnCollisionStay(Collision collision)
+    {
+        _isGrounded = true;
+    }
+    private void OnCollisionExit(Collision collision)
+    {
+        _isGrounded = false;
     }
 
     private Vector2 GetSwipe()
