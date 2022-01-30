@@ -1,16 +1,20 @@
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 public class Player : MonoBehaviour
 {
+    public Action Died;
+    public Action CoinGot;
+
     [SerializeField] Animator _animator;
-    [Header("Speed Options")]
+    [Header("Speed")]
     [SerializeField] private float _speed;
-    [SerializeField] private float _speedIncrease;
+    [SerializeField] private float _increaseSpeed;
     [SerializeField] private float _sideSpeed;
-    [Header("Jump Options")]
+    [Header("Jump")]
     [SerializeField] private float _jumpForce;
-    [Header("Road Options")]
+    [Header("Road Lines")]
     [SerializeField] private int _currentLine;
     [SerializeField] private int _linesCount;
     [SerializeField] private float _lineSize;
@@ -35,25 +39,20 @@ public class Player : MonoBehaviour
         if (canJump)
             _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
 
-        if (_isGrounded)
-            _animator.SetBool("Grounded", true);
-        else
-            _animator.SetBool("Grounded", false);
+        _animator.SetBool("Grounded", _isGrounded);
 
         ChangeLine(input);
     }
     private void FixedUpdate()
     {
-        var speed = _speed + _speedIncrease * (Time.time - _startRunTime);
-        var resultX = Mathf.MoveTowards(transform.position.x, _currentLine * _lineSize, _sideSpeed * Time.fixedDeltaTime);
-
-        transform.position = new Vector3(resultX, transform.position.y, transform.position.z);
-        transform.Translate(new Vector3(0, 0, speed) * Time.fixedDeltaTime);
+        Move();
     }
     private void OnTriggerEnter(Collider other)
     {
         if (other.TryGetComponent(out Enemy enemy))
-            gameObject.SetActive(false);
+            Died?.Invoke();
+        else if (other.TryGetComponent(out Coin coin))
+            CoinGot?.Invoke();
     }
     private void OnCollisionStay(Collision collision)
     {
@@ -64,6 +63,14 @@ public class Player : MonoBehaviour
         _isGrounded = false;
     }
 
+    private void Move()
+    {
+        var speed = _speed + _increaseSpeed * (Time.time - _startRunTime);
+        var resultX = Mathf.MoveTowards(transform.position.x, _currentLine * _lineSize, _sideSpeed * Time.fixedDeltaTime);
+
+        transform.position = new Vector3(resultX, transform.position.y, transform.position.z);
+        transform.Translate(new Vector3(0, 0, speed) * Time.fixedDeltaTime);
+    }
     private Vector2 GetSwipe()
     {
         var swipe = Vector2.zero;
@@ -87,12 +94,9 @@ public class Player : MonoBehaviour
     }
     private void ChangeLine(Vector2 input)
     {
-        if (input == Vector2.right)
+        if (input == Vector2.right && _currentLine < _linesCount)
             _currentLine++;
-        else if (input == Vector2.left)
+        else if (input == Vector2.left && _currentLine > 0)
             _currentLine--;
-
-        if (_currentLine < 0) _currentLine = 0;
-        else if (_currentLine > _linesCount) _currentLine = _linesCount;
     }
 }

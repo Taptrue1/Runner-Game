@@ -1,27 +1,25 @@
+using System;
 using UnityEngine;
-using TMPro;
 
-public class ScoreCounter : MonoBehaviour
+public class ScoreCounter
 {
-    public float Score => _score;
+    public int Score => _score;
+    public Action<int> ScoreChanged;
 
-    [SerializeField] private Transform _player;
-    [SerializeField] private float _coefficient;
-    [SerializeField] private TextMeshProUGUI _scoreText;
-    [SerializeField] private string _format;
+    private int _score;
+    private float _lastPosition;
+    private float _countCoefficient;
 
-    private float _score;
-    private float _startDistance;
-    private float _coveredDistance;
-
-    private void Start()
+    public void Init(float startPosition, float countCoefficient)
     {
-        _startDistance = _player.position.z;
+        _lastPosition = startPosition;
+        _countCoefficient = countCoefficient;
     }
-    private void Update()
+    public void Count(float currentPosition)
     {
-        _coveredDistance = _player.position.z - _startDistance;
-        _score = Mathf.Ceil(_coveredDistance * _coefficient);
-        _scoreText.text = string.Format(_format, _score);
+        var difference = currentPosition - _lastPosition;
+        _score += (int)Mathf.Ceil(difference * _countCoefficient);
+        _lastPosition = currentPosition;
+        ScoreChanged?.Invoke(_score);
     }
 }
