@@ -956,15 +956,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5576593703176310310, guid: b06051158cd7e1745953eeb579af3173, type: 3}
       propertyPath: _speed
-      value: 4
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5576593703176310310, guid: b06051158cd7e1745953eeb579af3173, type: 3}
       propertyPath: _lineSize
       value: 6.5
       objectReference: {fileID: 0}
     - target: {fileID: 5576593703176310310, guid: b06051158cd7e1745953eeb579af3173, type: 3}
-      propertyPath: _sideSpeed
+      propertyPath: _fallForce
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5576593703176310310, guid: b06051158cd7e1745953eeb579af3173, type: 3}
+      propertyPath: _jumpForce
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5576593703176310310, guid: b06051158cd7e1745953eeb579af3173, type: 3}
+      propertyPath: _sideSpeed
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 5576593703176310310, guid: b06051158cd7e1745953eeb579af3173, type: 3}
       propertyPath: _increaseSpeed

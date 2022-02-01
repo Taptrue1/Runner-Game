@@ -14,6 +14,8 @@ public class Player : MonoBehaviour
     [SerializeField] private float _sideSpeed;
     [Header("Jump")]
     [SerializeField] private float _jumpForce;
+    [Header("Fall")]
+    [SerializeField] private float _fallForce;
     [Header("Road Lines")]
     [SerializeField] private int _currentLine;
     [SerializeField] private int _linesCount;
@@ -35,18 +37,18 @@ public class Player : MonoBehaviour
     {
         var input = GetSwipe();
         var canJump = input == Vector2.up && _isGrounded;
+        var canFallDown = input == Vector2.down && !_isGrounded;
 
         if (canJump)
             _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
+        else if (canFallDown)
+            _rigidbody.AddForce(Vector3.down * _fallForce, ForceMode.Impulse);
 
         _animator.SetBool("Grounded", _isGrounded);
 
         ChangeLine(input);
     }
-    private void FixedUpdate()
-    {
-        Move();
-    }
+    private void FixedUpdate() => Move();
     private void OnTriggerEnter(Collider other)
     {
         if (other.TryGetComponent(out Enemy enemy))
@@ -54,14 +56,8 @@ public class Player : MonoBehaviour
         else if (other.TryGetComponent(out Coin coin))
             CoinGot?.Invoke();
     }
-    private void OnCollisionStay(Collision collision)
-    {
-        _isGrounded = true;
-    }
-    private void OnCollisionExit(Collision collision)
-    {
-        _isGrounded = false;
-    }
+    private void OnCollisionStay(Collision collision) => _isGrounded = true;
+    private void OnCollisionExit(Collision collision) => _isGrounded = false;
 
     private void Move()
     {
