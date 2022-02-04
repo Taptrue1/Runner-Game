@@ -1,98 +1,113 @@
-using System;
+﻿using System;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
-public class Player : MonoBehaviour
+namespace Assets.Scripts
 {
-    public Action Died;
-    public Action CoinGot;
-
-    [SerializeField] Animator _animator;
-    [Header("Speed")]
-    [SerializeField] private float _speed;
-    [SerializeField] private float _increaseSpeed;
-    [SerializeField] private float _sideSpeed;
-    [Header("Jump")]
-    [SerializeField] private float _jumpForce;
-    [Header("Fall")]
-    [SerializeField] private float _fallForce;
-    [Header("Road Lines")]
-    [SerializeField] private int _currentLine;
-    [SerializeField] private int _linesCount;
-    [SerializeField] private float _lineSize;
-
-    private Rigidbody _rigidbody;
-    private Vector2 _startTouchPosition;
-    private Vector2 _endTouchPosition;
-    private float _startRunTime;
-    private bool _isGrounded;
-
-    private void Start()
+    [RequireComponent(typeof(Rigidbody))]
+    internal class Player : MonoBehaviour
     {
-        _rigidbody = GetComponent<Rigidbody>();
-        _startRunTime = Time.time;
-        _animator.SetFloat("MoveSpeed", 1);
-    }
-    private void Update()
-    {
-        var input = GetSwipe();
-        var canJump = input == Vector2.up && _isGrounded;
-        var canFallDown = input == Vector2.down && !_isGrounded;
+        public Action Died;
+        public Action<int> CoinGot;
 
-        if (canJump)
-            _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
-        else if (canFallDown)
-            _rigidbody.AddForce(Vector3.down * _fallForce, ForceMode.Impulse);
+        [Header("Dependencies")]
+        [SerializeField] private Animator _animator;
+        [Header("Move Settings")]
+        [SerializeField] private float _speed;
+        [SerializeField] private float _increaseSpeed;
+        [SerializeField] private float _sideSpeed;
+        [SerializeField] private float _jumpForce;
+        [SerializeField] private float _fallForce;
+        [Header("Lines Settings")]
+        [SerializeField] private int _linesCount;
+        [SerializeField] private float _lineStep;
 
-        _animator.SetBool("Grounded", _isGrounded);
+        private Rigidbody _rigidbody;
+        private int _currentLine;
+        private float _startTime;
+        private bool _isGrounded;
+        private Vector2 _startTouchPosition;
+        private Vector2 _endTouchPosition;
 
-        ChangeLine(input);
-    }
-    private void FixedUpdate() => Move();
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.TryGetComponent(out Enemy enemy))
-            Died?.Invoke();
-        else if (other.TryGetComponent(out Coin coin))
-            CoinGot?.Invoke();
-    }
-    private void OnCollisionStay(Collision collision) => _isGrounded = true;
-    private void OnCollisionExit(Collision collision) => _isGrounded = false;
-
-    private void Move()
-    {
-        var speed = _speed + _increaseSpeed * (Time.time - _startRunTime);
-        var resultX = Mathf.MoveTowards(transform.position.x, _currentLine * _lineSize, _sideSpeed * Time.fixedDeltaTime);
-
-        transform.position = new Vector3(resultX, transform.position.y, transform.position.z);
-        transform.Translate(new Vector3(0, 0, speed) * Time.fixedDeltaTime);
-    }
-    private Vector2 GetSwipe()
-    {
-        var swipe = Vector2.zero;
-
-        if (Input.GetMouseButtonDown(0))
+        private void Start()
         {
-            _startTouchPosition = Input.mousePosition;
+            _rigidbody = GetComponent<Rigidbody>();
+            _startTime = Time.time;
+            _animator.SetFloat("MoveSpeed", 1);
         }
-        else if (Input.GetMouseButtonUp(0))
+        private void Update()
         {
-            _endTouchPosition = Input.mousePosition;
-            var input = _endTouchPosition - _startTouchPosition;
-
-            if (Mathf.Abs(input.x) > Mathf.Abs(input.y))
-                swipe = input.x < 0 ? Vector2.left : Vector2.right;
-            else
-                swipe = input.y < 0 ? Vector2.down : Vector2.up;
+            var input = GetSwipe();
+            ReadInput(input);
+            Move();
+        }
+        private void OnCollisionStay(Collision collision) => _isGrounded = true;
+        private void OnCollisionExit(Collision collision) => _isGrounded = false;
+        private void OnTriggerEnter(Collider other)
+        {
+            if(other.gameObject.TryGetComponent(out Enemy enemy))
+            {
+                Died?.Invoke();
+            }
+            else if(other.gameObject.TryGetComponent(out Coin coin))
+            {
+                CoinGot?.Invoke(coin.Value);
+                coin.Destroy();
+            }
         }
 
-        return swipe;
-    }
-    private void ChangeLine(Vector2 input)
-    {
-        if (input == Vector2.right && _currentLine < _linesCount)
-            _currentLine++;
-        else if (input == Vector2.left && _currentLine > 0)
-            _currentLine--;
+        private void ReadInput(Vector2 input)
+        {
+            var canJump = input == Vector2.up && _isGrounded;
+            var canFallDown = input == Vector2.down && !_isGrounded;
+
+            if (canJump)
+                _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
+            else if (canFallDown)
+                _rigidbody.AddForce(Vector3.down * _fallForce, ForceMode.Impulse);
+
+            _animator.SetBool("Grounded", _isGrounded);
+            ChangeLine(input);
+        }
+        private void Move()
+        {
+            var additionSpeed = (Time.time - _startTime) * _increaseSpeed;
+            var speed = _speed + Mathf.Ceil(additionSpeed);
+            var moveDirection = new Vector3(0, 0, speed);
+            var xPosition = Mathf.MoveTowards(transform.position.x, _currentLine * _lineStep, _sideSpeed * Time.deltaTime);
+
+            transform.position = new Vector3(xPosition, transform.position.y, transform.position.z);
+            transform.Translate(moveDirection * Time.deltaTime);
+        }
+        private void ChangeLine(Vector2 input)
+        {
+            var isLineLessThanMax = _currentLine < _linesCount - 1;
+            var isLineBiggerThanMin = _currentLine > 0;
+
+            if (input.x > 0 && isLineLessThanMax)
+                _currentLine++;
+            else if(input.x < 0 && isLineBiggerThanMin)
+                _currentLine--;
+        }
+        private Vector2 GetSwipe()
+        {
+            var swipe = Vector2.zero;
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                _startTouchPosition = Input.mousePosition;
+            }
+            else if (Input.GetMouseButtonUp(0))
+            {
+                _endTouchPosition = Input.mousePosition;
+                var input = _endTouchPosition - _startTouchPosition;
+
+                if (Mathf.Abs(input.x) > Mathf.Abs(input.y))
+                    swipe = input.x < 0 ? Vector2.left : Vector2.right;
+                else
+                    swipe = input.y < 0 ? Vector2.down : Vector2.up;
+            }
+
+            return swipe;
+        }
     }
 }

@@ -1,9 +1,16 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-public class Coin : MonoBehaviour
+namespace Assets.Scripts
 {
-    private void OnTriggerEnter(Collider other)
+    internal class Coin : MonoBehaviour
     {
-        Destroy(gameObject);
+        public int Value => _value;
+
+        [SerializeField] private int _value;
+
+        public void Destroy()
+        {
+            Destroy(gameObject);
+        }
     }
 }
