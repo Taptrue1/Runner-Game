@@ -3,7 +3,37 @@ guid: 69424b8e3924d1647a300a8e4d90c720
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: custom6(Clone)
+    second: {fileID: 2100000, guid: ddbf5dcf7f8c1734c98a49610f51fc59, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: dark(Clone)
+    second: {fileID: 2100000, guid: 99db37a5038a6fb4fb248fe855ca4c58, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: glass(Clone)
+    second: {fileID: 2100000, guid: 24c11dbdca51c7045b3baa80838c53b5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lightRed(Clone)
+    second: {fileID: 2100000, guid: c5b99abdb478aa04881b756ef7a8bafd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: metal(Clone)
+    second: {fileID: 2100000, guid: 651eca2a58fc74f40a89f56709e4b354, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: metalLight(Clone)
+    second: {fileID: 2100000, guid: c49a172b53bc5b048bdb32ea1906626d, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

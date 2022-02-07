@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.43667564, g: 0.48427135, b: 0.5645232, a: 1}
+  m_IndirectSpecularColor: {r: 0.17757855, g: 0.22232187, b: 0.30451763, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _text: {fileID: 1117568334}
-  _format: Score - {0}
+  _format: '{0}'
   _maxAnimateScale: 1.2
   _animationDuration: 0.1
 --- !u!4 &297249037
@@ -256,13 +256,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0.5, y: 0, z: 0, w: 0.8660254}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 60, y: 0, z: 0}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -301,7 +301,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.2028302, g: 0.8354045, b: 1, a: 0}
+  m_BackGroundColor: {r: 0.4481132, g: 0.92191774, b: 1, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -362,7 +362,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _player: {fileID: 4274867865166987}
   _positionOffset: {x: 0, y: 6, z: -4}
-  _speed: 0.05
+  _speed: 0.1
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -486,7 +486,7 @@ MonoBehaviour:
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 60
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -827,7 +827,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5576593703176310310, guid: b06051158cd7e1745953eeb579af3173, type: 3}
       propertyPath: _speed
-      value: 10
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 5576593703176310310, guid: b06051158cd7e1745953eeb579af3173, type: 3}
       propertyPath: _lineSize
@@ -850,12 +850,16 @@ PrefabInstance:
       value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5576593703176310310, guid: b06051158cd7e1745953eeb579af3173, type: 3}
+      propertyPath: _startLine
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5576593703176310310, guid: b06051158cd7e1745953eeb579af3173, type: 3}
       propertyPath: _linesCount
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5576593703176310310, guid: b06051158cd7e1745953eeb579af3173, type: 3}
       propertyPath: _increaseSpeed
-      value: 0.05
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 5576593703176310310, guid: b06051158cd7e1745953eeb579af3173, type: 3}
       propertyPath: _speedIncrease

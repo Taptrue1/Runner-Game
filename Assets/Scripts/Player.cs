@@ -18,6 +18,7 @@ namespace Assets.Scripts
         [SerializeField] private float _jumpForce;
         [SerializeField] private float _fallForce;
         [Header("Lines Settings")]
+        [SerializeField] private int _startLine;
         [SerializeField] private int _linesCount;
         [SerializeField] private float _lineStep;
 
@@ -32,6 +33,7 @@ namespace Assets.Scripts
         {
             _rigidbody = GetComponent<Rigidbody>();
             _startTime = Time.time;
+            _currentLine = _startLine;
             _animator.SetFloat("MoveSpeed", 1);
         }
         private void Update()
